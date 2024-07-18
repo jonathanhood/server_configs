@@ -1,53 +1,44 @@
 ---
-- name: Gitlab Server
+- name: Server
+  hosts: all
+  roles:
+    - common
+    - python
+    - unattended_upgrades
+
+- name: Gitlab
   hosts: gitlab
   roles:
     - common
     - python
     - unattended_upgrades
 
-- name: Home Assistant Server
+- name: Home Assistant
   hosts: assistant
   roles:
-    - common
-    - python
     - docker
     - home_assistant
-    - unattended_upgrades
 
-- name: FreshRSS Server
+- name: FreshRSS
   hosts: rss
   roles:
-    - common
-    - python
     - docker
     - freshrss
-    - unattended_upgrades
 
-- name: Minecraft Server
+- name: Minecraft
   hosts: minecraft
-
   roles:
-    - common
     - minecraft
-    - unattended_upgrades
 
-- name: Portainer Server
+- name: Portainer
   hosts: portainer
-
   roles:
-    - common
     - docker
     - portainer
-    - unattended_upgrades
 
-- name: Reverse Proxy Server
+- name: Reverse Proxy
   hosts: proxy
-
   roles:
-    - common
-    - python
     - docker
     - nginx_proxy_manager
-    - unattended_upgrades
 
