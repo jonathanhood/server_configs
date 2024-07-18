@@ -1,8 +1,0 @@
----
-- name: Gaming Items
-  hosts: gaming
-
-  roles:
-    - common
-    - discord
-    - steam
