@@ -5,7 +5,7 @@
 
 - name: Set authorized_keys
   ansible.posix.authorized_key:
-    user: jhood
+    user: "{{ ansible_user }}"
     state: present
     key: "{{ lookup('file', 'jhood_key.pub') }}"
     exclusive: true
@@ -34,3 +34,12 @@
     name: user.name
     value: Jonathan Hood
     scope: global
+
+- name: Install python3
+  apt:
+    name:
+      - python3
+      - python3-pip
+      - python3-requests
+    state: present
+  become: true

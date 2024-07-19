@@ -1,0 +1,80 @@
+- name: Install Samba Client
+  ansible.builtin.apt:
+    name: cifs-utils
+    state: present
+  become: true
+
+- name: Create Rom Library Directory
+  ansible.builtin.file:
+    path: /mnt/roms
+    state: directory
+  become: true
+
+- name: Mount Rom Library
+  ansible.builtin.mount:
+    src: "//{{ samba_host }}/roms"
+    path: /mnt/roms
+    fstype: cifs
+    opts: 'username={{ romm_smb_user }},password={{ romm_smb_pass }}'
+    state: mounted
+  become: true
+
+- name: Create Romm Data Directory
+  ansible.builtin.file:
+    path: /opt/romm
+    state: directory
+  become: true
+
+- name: Install MariaDB Configuration
+  ansible.builtin.template:
+    src: mariadb.env.j2
+    dest: /opt/romm/mariadb.env
+    mode: '0600'
+  become: true
+
+- name: Install Romm Configuration
+  ansible.builtin.template:
+    src: romm.env.j2
+    dest: /opt/romm/romm.env
+    mode: '0600'
+  become: true
+
+- name: Setup Romm Resources Volume
+  community.docker.docker_volume:
+    name: romm_resources
+  become: true
+
+- name: Setup Romm Redis Volume
+  community.docker.docker_volume:
+    name: romm_redis_data
+  become: true
+
+- name: Start MariaDB Container
+  community.docker.docker_container:
+    name: romm-db
+    image: mariadb:latest
+    state: started
+    restart_policy: unless-stopped
+    env_file: /opt/romm/mariadb.env
+    volumes:
+      - mysql_data:/var/lib/mysql
+  become: true
+
+- name: Start Romm Container
+  community.docker.docker_container:
+    name: romm
+    image: rommapp/romm:latest
+    state: started
+    restart_policy: unless-stopped
+    env_file: /opt/romm/romm.env
+    volumes:
+      - romm_resources:/romm/resources
+      - romm_redis_data:/redis-data
+      - /mnt/roms:/romm/library
+      - /opt/romm/assets:/romm/assets
+      - /opt/romm/config:/romm/config
+    links:
+      - romm-db:romm-db
+    ports:
+      - "80:8080"
+  become: true
