@@ -1,3 +1,24 @@
+- name: Install Samba Client
+  ansible.builtin.apt:
+    name: cifs-utils
+    state: present
+  become: true
+
+- name: Create Rom Library Directory
+  ansible.builtin.file:
+    path: /mnt/roms
+    state: directory
+  become: true
+
+- name: Mount Rom Library
+  ansible.builtin.mount:
+    src: "//{{ samba_host }}/roms"
+    path: /mnt/roms
+    fstype: cifs
+    opts: 'username={{ romm_smb_user }},password={{ romm_smb_pass }}'
+    state: mounted
+  become: true
+
 - name: Create Romm Data Directory
   ansible.builtin.file:
     path: /opt/romm
