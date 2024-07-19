@@ -3,14 +3,12 @@
   hosts: all
   roles:
     - common
-    - python
     - unattended_upgrades
 
 - name: Gitlab
   hosts: gitlab
   roles:
     - common
-    - python
     - unattended_upgrades
 
 - name: Home Assistant
@@ -41,4 +39,10 @@
   roles:
     - docker
     - nginx_proxy_manager
+
+- name: Romm
+  hosts: romm
+  roles:
+    - docker
+    - romm
 

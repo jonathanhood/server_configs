@@ -30,7 +30,7 @@
 
   - name: Install mscs
     ansible.builtin.shell:
-      chdir: /home/jhood/.mscs
+      chdir: "{{ ansible_env.HOME }}/.mscs"
       cmd: make install
       creates: /usr/local/bin/msctl
     become: true
